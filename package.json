@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
-    "build": "npx prisma generate && next build",
+    "build": "next build",
+    "start": "next start",
     "postinstall": "prisma generate"
   },
   "author": "abir hasan khan",
