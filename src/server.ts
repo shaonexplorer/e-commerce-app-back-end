@@ -3,6 +3,7 @@ import "dotenv/config";
 import { Server } from "http";
 import { prisma } from "./app/config/prisma";
 import app from "./app";
+import { seedAdmin } from "./app/utils/seed-admin";
 
 const port = process.env.PORT;
 
@@ -23,6 +24,7 @@ const startServer = async () => {
 
 (async () => {
   await startServer();
+  await seedAdmin();
   //    seed mock data
 })();
 
