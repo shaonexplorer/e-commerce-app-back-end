@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import { orderRoutes } from "./app/modules/order/order.routes";
 import cors from "cors";
 
-export const app = express();
+const app = express();
 
 app.use(
   cors({
@@ -44,3 +44,5 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     error,
   });
 });
+
+export default app;
