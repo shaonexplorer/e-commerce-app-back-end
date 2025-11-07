@@ -6,6 +6,12 @@ import { authenticate } from "../../middleware/authenticate";
 
 const router = express.Router();
 
+router.get(
+  "/getMe",
+  authenticate(["ADMIN", "SELLER", "BUYER"]),
+  userController.getMe
+);
+
 router.get("/", authenticate(["ADMIN"]), userController.getAllUsers);
 
 router.post("/:id", authenticate(["ADMIN"]), userController.suspendUser);

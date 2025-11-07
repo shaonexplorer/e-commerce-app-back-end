@@ -3,6 +3,14 @@ import { prisma } from "../../config/prisma";
 import "dotenv/config";
 import bcrypt from "bcrypt";
 
+const getMe = async (req: Request & { user?: any }) => {
+  const userId = req.user?.id;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  return user;
+};
+
 const register = async (req: Request) => {
   const saltRounds = process.env.SALT_ROUNDS;
   const hasedPassword = await bcrypt.hash(
@@ -36,4 +44,5 @@ export const userService = {
   register,
   getAllUsers,
   suspendUser,
+  getMe,
 };
