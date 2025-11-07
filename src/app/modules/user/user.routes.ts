@@ -14,12 +14,12 @@ router.get(
 
 router.get("/", authenticate(["ADMIN"]), userController.getAllUsers);
 
-router.post("/:id", authenticate(["ADMIN"]), userController.suspendUser);
-
 router.post(
   "/register",
   zodValidation(createUserZodSchema),
   userController.register
 );
+
+router.post("/:id", authenticate(["ADMIN"]), userController.suspendUser);
 
 export const userRoutes = router;
