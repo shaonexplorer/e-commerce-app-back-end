@@ -6,7 +6,11 @@ import { authenticate } from "../../middleware/authenticate";
 
 const router = express.Router();
 
-router.get("/getMe", userController.getMe);
+router.get(
+  "/getMe",
+  authenticate(["ADMIN", "SELLER", "BUYER"]),
+  userController.getMe
+);
 
 router.get("/", authenticate(["ADMIN"]), userController.getAllUsers);
 
