@@ -7,6 +7,7 @@ const getMe = async (req: Request & { user?: any }) => {
   const userId = req.user?.userId;
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: { password: false },
   });
   return user;
 };
