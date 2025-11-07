@@ -4,7 +4,7 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 
 const getMe = async (req: Request & { user?: any }) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
