@@ -24,12 +24,6 @@ const createProduct = async (req: Request & { user?: any }) => {
     imageUrls = cloudinaryImages.map((img) => img.secure_url);
   }
 
-  const local = images?.forEach((file) => {
-    fs.unlinkSync(file.path);
-  });
-
-  await Promise.all(local || []);
-
   const product = await prisma.product.create({
     data: {
       ...req.body,
@@ -37,6 +31,13 @@ const createProduct = async (req: Request & { user?: any }) => {
       sellerId: req.user?.userId,
     },
   });
+
+  const local = images?.forEach((file) => {
+    fs.unlinkSync(file.path);
+  });
+
+  await Promise.all(local || []);
+
   return product;
 };
 
