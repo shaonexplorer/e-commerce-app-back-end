@@ -2,6 +2,7 @@ import { Request } from "express";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import fs from "fs";
+import streamifier from "streamifier";
 
 const getAllProducts = async (req: Request) => {
   const id = req.params.id;
@@ -12,16 +13,31 @@ const getAllProducts = async (req: Request) => {
 const createProduct = async (req: Request & { user?: any }) => {
   const images = req.files as Express.Multer.File[] | undefined;
 
-  const uploads = images?.map((file) => {
-    return cloudinary.uploader.upload(file.path);
-  });
+  const buffers = images?.map((file) => file.buffer);
 
-  const cloudinaryImages = await Promise.all(uploads || []);
+  const uploadToCloudinary = (buffer: Buffer) => {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream((error, uploadResult) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(uploadResult);
+        })
+        .end(buffer);
+    });
+  };
+
+  const uploadResult = buffers?.map((buffer) => uploadToCloudinary(buffer));
+
+  const result = await Promise.all(uploadResult as any);
+
+  console.log({ result });
 
   let imageUrls: string[] = [];
 
-  if (cloudinaryImages.length) {
-    imageUrls = cloudinaryImages.map((img) => img.secure_url);
+  if (result.length) {
+    imageUrls = result.map((img) => img.secure_url);
   }
 
   const product = await prisma.product.create({
@@ -31,12 +47,6 @@ const createProduct = async (req: Request & { user?: any }) => {
       sellerId: req.user?.userId,
     },
   });
-
-  // const local = images?.forEach((file) => {
-  //   fs.unlinkSync(file.path);
-  // });
-
-  // await Promise.all(local || []);
 
   return product;
 };
