@@ -5,7 +5,10 @@ import fs from "fs";
 
 const getAllProducts = async (req: Request & { user?: any }) => {
   const id = req.user.userId;
-  const products = await prisma.product.findMany({ where: { sellerId: id } });
+  const products = await prisma.product.findMany({
+    where: { sellerId: id },
+    orderBy: { createdAt: "desc" },
+  });
   return products;
 };
 
