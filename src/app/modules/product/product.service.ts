@@ -42,6 +42,8 @@ const createProduct = async (req: Request & { user?: any }) => {
   const product = await prisma.product.create({
     data: {
       ...req.body,
+      price: parseFloat(req.body.price),
+      quantity: parseInt(req.body.quantity),
       images: imageUrls,
       sellerId: req.user?.userId,
     },
