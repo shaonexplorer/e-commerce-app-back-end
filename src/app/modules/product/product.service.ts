@@ -2,7 +2,6 @@ import { Request } from "express";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import fs from "fs";
-import streamifier from "streamifier";
 
 const getAllProducts = async (req: Request & { user?: any }) => {
   const id = req.user.userId;
