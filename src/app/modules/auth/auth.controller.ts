@@ -10,7 +10,7 @@ const login = catchAsync(
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      path: "/seller/home",
+      path: "/",
     });
 
     res.cookie("refreshToken", refreshToken, {
