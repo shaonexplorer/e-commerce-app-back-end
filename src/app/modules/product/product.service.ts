@@ -32,11 +32,11 @@ const createProduct = async (req: Request & { user?: any }) => {
     },
   });
 
-  const local = images?.forEach((file) => {
-    fs.unlinkSync(file.path);
-  });
+  // const local = images?.forEach((file) => {
+  //   fs.unlinkSync(file.path);
+  // });
 
-  await Promise.all(local || []);
+  // await Promise.all(local || []);
 
   return product;
 };
