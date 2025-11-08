@@ -4,8 +4,8 @@ import cloudinary from "../../config/cloudinary";
 import fs from "fs";
 import streamifier from "streamifier";
 
-const getAllProducts = async (req: Request) => {
-  const id = req.params.id;
+const getAllProducts = async (req: Request & { user?: any }) => {
+  const id = req.user.userId;
   const products = await prisma.product.findMany({ where: { sellerId: id } });
   return products;
 };

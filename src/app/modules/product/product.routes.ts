@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.get("/:id", authenticate(["SELLER"]), productController.getAllProducts);
+router.get("/", authenticate(["SELLER"]), productController.getAllProducts);
 
 router.post(
   "/create",
