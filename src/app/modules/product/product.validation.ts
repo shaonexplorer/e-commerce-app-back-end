@@ -16,4 +16,5 @@ export const updateProductZodSchema = z.object({
   price: z.string().optional(), // Base price
   quantity: z.string().optional(), // Stock quantity
   sellerId: z.string().optional(),
+  existingImages: z.array(z.string()).optional(),
 });

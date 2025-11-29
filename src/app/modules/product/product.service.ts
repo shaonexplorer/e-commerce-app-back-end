@@ -94,6 +94,10 @@ const editProduct = async (req: Request) => {
 
   await Promise.all(local || []);
 
+  if (req.body.existingImages) {
+    imageUrls = [...req.body.existingImages, ...imageUrls];
+  }
+
   const product = await prisma.product.update({
     where: { id: id },
     data: { ...req.body, ...(imageUrls.length > 0 && { images: imageUrls }) },
