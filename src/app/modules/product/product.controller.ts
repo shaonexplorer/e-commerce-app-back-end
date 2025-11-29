@@ -15,6 +15,19 @@ const getAllProducts = catchAsync(
   }
 );
 
+const getProductById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const product = await productService.getProductById(req);
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "Product retrieved successfully",
+      data: product,
+    });
+  }
+);
+
 const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const product = await productService.createProduct(req);
@@ -57,6 +70,7 @@ const deleteProduct = catchAsync(
 export const productController = {
   createProduct,
   getAllProducts,
+  getProductById,
   deleteProduct,
   editProduct,
 };

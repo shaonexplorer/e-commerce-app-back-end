@@ -12,6 +12,12 @@ const router = express.Router();
 
 router.get("/", authenticate(["SELLER"]), productController.getAllProducts);
 
+router.get(
+  "/:id",
+  authenticate(["SELLER", "ADMIN"]),
+  productController.getProductById
+);
+
 router.post(
   "/create",
   upload.array("images", 5),

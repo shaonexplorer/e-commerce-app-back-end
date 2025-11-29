@@ -12,6 +12,14 @@ const getAllProducts = async (req: Request & { user?: any }) => {
   return products;
 };
 
+const getProductById = async (req: Request) => {
+  const id = req.params.id;
+  const product = await prisma.product.findUniqueOrThrow({
+    where: { id },
+  });
+  return product;
+};
+
 const createProduct = async (req: Request & { user?: any }) => {
   const images = req.files as Express.Multer.File[] | undefined;
 
@@ -96,6 +104,7 @@ const editProduct = async (req: Request) => {
 export const productService = {
   createProduct,
   getAllProducts,
+  getProductById,
   deleteProduct,
   editProduct,
 };
