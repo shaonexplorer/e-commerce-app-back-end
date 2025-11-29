@@ -13,8 +13,8 @@ export const updateProductZodSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   category: z.string().optional(), // For browse/search
-  price: z.string().optional(), // Base price
-  quantity: z.string().optional(), // Stock quantity
+  price: z.number().optional(), // Base price
+  quantity: z.number().optional(), // Stock quantity
   sellerId: z.string().optional(),
   existingImages: z.array(z.string()).optional(),
 });
