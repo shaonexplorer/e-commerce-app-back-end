@@ -3,6 +3,13 @@ import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import fs from "fs";
 
+const getPublicProducts = async (req: Request) => {
+  const products = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  return products;
+};
+
 const getAllProducts = async (req: Request & { user?: any }) => {
   const id = req.user.userId;
   const products = await prisma.product.findMany({
@@ -113,4 +120,5 @@ export const productService = {
   getProductById,
   deleteProduct,
   editProduct,
+  getPublicProducts,
 };

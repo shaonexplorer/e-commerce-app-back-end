@@ -2,6 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { productService } from "./product.service";
 
+const getPublicProducts = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const products = await productService.getPublicProducts(req);
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "Product retrieved successfully",
+      data: products,
+    });
+  }
+);
+
 const getAllProducts = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const products = await productService.getAllProducts(req);
@@ -73,4 +86,5 @@ export const productController = {
   getProductById,
   deleteProduct,
   editProduct,
+  getPublicProducts,
 };
