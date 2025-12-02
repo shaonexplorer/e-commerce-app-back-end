@@ -120,11 +120,11 @@ const editProduct = async (req: Request) => {
     imageUrls = result.map((img) => img.secure_url);
   }
 
-  const local = images?.forEach((file) => {
-    fs.unlinkSync(file.path);
-  });
+  // const local = images?.forEach((file) => {
+  //   fs.unlinkSync(file.path);
+  // });
 
-  await Promise.all(local || []);
+  // await Promise.all(local || []);
 
   if (req.body.existingImages) {
     imageUrls = [...req.body.existingImages, ...imageUrls];
