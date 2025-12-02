@@ -83,16 +83,41 @@ const editProduct = async (req: Request) => {
 
   const images = req.files as Express.Multer.File[] | undefined;
 
-  const uploads = images?.map((file) => {
-    return cloudinary.uploader.upload(file.path);
-  });
+  // const uploads = images?.map((file) => {
+  //   return cloudinary.uploader.upload(file.path);
+  // });
 
-  const cloudinaryImages = await Promise.all(uploads || []);
+  // const cloudinaryImages = await Promise.all(uploads || []);
+
+  const buffers = images?.map((file) => file.buffer);
+
+  const uploadToCloudinary = (buffer: Buffer) => {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream((error, uploadResult) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(uploadResult);
+        })
+        .end(buffer);
+    });
+  };
+
+  const uploadResult = buffers?.map((buffer) => uploadToCloudinary(buffer));
+
+  const result = await Promise.all(uploadResult as any);
+
+  console.log({ result });
 
   let imageUrls: string[] = [];
 
-  if (cloudinaryImages.length) {
-    imageUrls = cloudinaryImages.map((img) => img.secure_url);
+  // if (cloudinaryImages.length) {
+  //   imageUrls = cloudinaryImages.map((img) => img.secure_url);
+  // }
+
+  if (result.length) {
+    imageUrls = result.map((img) => img.secure_url);
   }
 
   const local = images?.forEach((file) => {
