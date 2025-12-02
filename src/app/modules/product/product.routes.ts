@@ -10,11 +10,11 @@ import {
 
 const router = express.Router();
 
-router.get("/", authenticate(["SELLER"]), productController.getAllProducts);
+router.get("/", productController.getAllProducts);
 
 router.get(
   "/:id",
-  authenticate(["SELLER", "ADMIN"]),
+
   productController.getProductById
 );
 
