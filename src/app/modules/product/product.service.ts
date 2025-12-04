@@ -9,6 +9,8 @@ const getPublicProducts = async (req: Request) => {
 
   if (searchTerm) {
     whereCondition.push({ title: { contains: searchTerm as string } });
+  } else {
+    whereCondition.push({ title: "" });
   }
 
   const products = await prisma.product.findMany({
