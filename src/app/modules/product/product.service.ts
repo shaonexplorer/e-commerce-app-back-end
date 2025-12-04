@@ -4,7 +4,7 @@ import cloudinary from "../../config/cloudinary";
 import { ProductWhereInput } from "../../../../generated/prisma/models";
 
 const getPublicProducts = async (req: Request) => {
-  const { searchTerm, category } = req.query;
+  const { searchTerm, category, price } = req.query;
 
   const whereCondition: ProductWhereInput = {};
 
@@ -18,6 +18,12 @@ const getPublicProducts = async (req: Request) => {
   if (category) {
     whereCondition.category = {
       equals: category as string,
+    };
+  }
+
+  if (price) {
+    whereCondition.price = {
+      lte: Number(price),
     };
   }
 
