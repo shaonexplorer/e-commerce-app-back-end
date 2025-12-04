@@ -1,10 +1,18 @@
 import { Request } from "express";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
-import fs from "fs";
 
 const getPublicProducts = async (req: Request) => {
+  const { searchTerm } = req.query;
+
+  const whereCondition = [];
+
+  if (searchTerm) {
+    whereCondition.push({ title: { contains: searchTerm as string } });
+  }
+
   const products = await prisma.product.findMany({
+    where: { OR: whereCondition },
     orderBy: { createdAt: "desc" },
   });
   return products;
