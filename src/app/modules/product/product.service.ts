@@ -2,9 +2,14 @@ import { Request } from "express";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import { ProductWhereInput } from "../../../../generated/prisma/models";
+import {
+  Product$OrderItemArgs,
+  ProductOrderByWithRelationInput,
+  SortOrder,
+} from "../../../../generated/prisma/internal/prismaNamespace";
 
 const getPublicProducts = async (req: Request) => {
-  const { searchTerm, category, price } = req.query;
+  const { searchTerm, category, price, orderBy } = req.query;
 
   const whereCondition: ProductWhereInput = {};
 
@@ -27,9 +32,22 @@ const getPublicProducts = async (req: Request) => {
     };
   }
 
+  let order:
+    | ProductOrderByWithRelationInput
+    | ProductOrderByWithRelationInput[]
+    | undefined = { createdAt: "desc" as SortOrder };
+
+  if (orderBy == "priceHigh") {
+    order = { price: "desc" };
+  } else if (orderBy == "priceLow") {
+    order = { price: "asc" };
+  } else if (orderBy == "recent") {
+    order = { createdAt: "desc" };
+  }
+
   const products = await prisma.product.findMany({
     where: whereCondition,
-    orderBy: { createdAt: "desc" },
+    orderBy: order,
   });
   return products;
 };
