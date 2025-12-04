@@ -1,20 +1,22 @@
 import { Request } from "express";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
+import { ProductWhereInput } from "../../../../generated/prisma/models";
 
 const getPublicProducts = async (req: Request) => {
   const { searchTerm } = req.query;
 
-  const whereCondition = [];
+  const whereCondition: ProductWhereInput = {};
 
   if (searchTerm) {
-    whereCondition.push({ title: { contains: searchTerm as string } });
-  } else {
-    whereCondition.push({ title: "" });
+    whereCondition.title = {
+      contains: searchTerm as string,
+      mode: "insensitive",
+    };
   }
 
   const products = await prisma.product.findMany({
-    where: { OR: whereCondition },
+    where: whereCondition,
     orderBy: { createdAt: "desc" },
   });
   return products;
