@@ -22,7 +22,7 @@ router.post("/create-checkout-session", async (req, res, next) => {
     return {
       price_data: {
         currency: "usd",
-        unit_amount: item.unitPrice, // Price in cents (e.g., $20.00)
+        unit_amount: Math.round(item.unitPrice * 100), // Price in cents (e.g., $20.00)
         product_data: {
           name: item.name,
           // description: "A comprehensive guide to Node.js.",
