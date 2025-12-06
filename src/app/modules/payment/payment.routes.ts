@@ -2,7 +2,8 @@ import express from "express";
 import "dotenv/config";
 
 const router = express.Router();
-const stripe = require("stripe")();
+const secret_key = process.env.STRIPE_SECRET;
+const stripe = require("stripe")(secret_key);
 
 const client_url = process.env.CLIENT_URL;
 
