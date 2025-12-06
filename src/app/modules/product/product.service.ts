@@ -3,7 +3,6 @@ import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import { ProductWhereInput } from "../../../../generated/prisma/models";
 import {
-  Product$OrderItemArgs,
   ProductOrderByWithRelationInput,
   SortOrder,
 } from "../../../../generated/prisma/internal/prismaNamespace";

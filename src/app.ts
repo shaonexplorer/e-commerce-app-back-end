@@ -5,6 +5,7 @@ import { productRoutes } from "./app/modules/product/product.routes";
 import cookieParser from "cookie-parser";
 import { orderRoutes } from "./app/modules/order/order.routes";
 import cors from "cors";
+import { paymentRoutes } from "./app/modules/payment/payment.routes";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
