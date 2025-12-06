@@ -8,26 +8,32 @@ const stripe = require("stripe")(secret_key);
 const client_url = process.env.CLIENT_URL;
 
 router.post("/create-checkout-session", async (req, res, next) => {
-  const session = await stripe.checkout.sessions.create({
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: 2000, // Price in cents (e.g., $20.00)
-          product_data: {
-            name: "Premium E-book",
-            description: "A comprehensive guide to Node.js.",
-            images: ["https://example.com/image.png"],
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: 2000, // Price in cents (e.g., $20.00)
+            product_data: {
+              name: "Premium E-book",
+              description: "A comprehensive guide to Node.js.",
+              images: ["https://example.com/image.png"],
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    mode: "payment",
-    success_url: `${client_url}?success=true`,
-  });
+      ],
+      mode: "payment",
+      success_url: `${client_url}?success=true`,
+    });
 
-  res.redirect(303, session.url);
+    //   res.redirect(303, session.url);
+    res.status(200).json({ success: true, data: session });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 });
 
 export const paymentRoutes = router;
