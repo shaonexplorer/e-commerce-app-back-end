@@ -7,23 +7,34 @@ const stripe = require("stripe")(secret_key);
 
 const client_url = process.env.CLIENT_URL;
 
+export interface ICartItem {
+  id: string;
+  name: string;
+  image: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
 router.post("/create-checkout-session", async (req, res, next) => {
+  const cartItems = req.body.cartItems;
+  const lineItems = cartItems.map((item: ICartItem) => {
+    return {
+      price_data: {
+        currency: "usd",
+        unit_amount: item.unitPrice, // Price in cents (e.g., $20.00)
+        product_data: {
+          name: item.name,
+          // description: "A comprehensive guide to Node.js.",
+          images: item.image,
+        },
+      },
+      quantity: item.quantity,
+    };
+  });
   try {
     const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            unit_amount: 2000, // Price in cents (e.g., $20.00)
-            product_data: {
-              name: "Premium E-book",
-              description: "A comprehensive guide to Node.js.",
-              images: ["https://example.com/image.png"],
-            },
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: "payment",
       success_url: `${client_url}?success=true`,
     });
