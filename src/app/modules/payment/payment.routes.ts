@@ -11,8 +11,15 @@ router.post("/create-checkout-session", async (req, res, next) => {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-        price: req.body.price,
+        price_data: {
+          currency: "usd",
+          unit_amount: 2000, // Price in cents (e.g., $20.00)
+          product_data: {
+            name: "Premium E-book",
+            description: "A comprehensive guide to Node.js.",
+            images: ["https://example.com/image.png"],
+          },
+        },
         quantity: 1,
       },
     ],
