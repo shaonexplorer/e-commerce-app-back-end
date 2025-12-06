@@ -27,8 +27,6 @@ router.post("/create-checkout-session", async (req, res, next) => {
     success_url: `${client_url}?success=true`,
   });
 
-  res.json({ url: session.url });
-
   res.redirect(303, session.url);
 });
 
