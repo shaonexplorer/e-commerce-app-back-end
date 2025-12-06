@@ -26,12 +26,16 @@ router.post("/create-checkout-session", async (req, res, next) => {
         product_data: {
           name: item.name,
           // description: "A comprehensive guide to Node.js.",
-          images: item.image,
+          images: [item.image],
         },
       },
       quantity: item.quantity,
     };
   });
+
+  console.log({ cartItems });
+  console.log({ lineItems });
+
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [...lineItems],
