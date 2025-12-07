@@ -54,9 +54,23 @@ const getorderItems = catchAsync(
   }
 );
 
+const getSingleOrder = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const order = await orderService.getSingleOrder(req);
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "order retrieved successfully",
+      data: order,
+    });
+  }
+);
+
 export const orderController = {
   createOrder,
   updateOrderStatus,
   getAllOrders,
   getorderItems,
+  getSingleOrder,
 };

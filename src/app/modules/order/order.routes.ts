@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get("/", authenticate(["SELLER"]), orderController.getAllOrders);
 
+router.get("/:orderId", orderController.getSingleOrder);
+
 router.get("/orderItems/:orderId", orderController.getorderItems);
 
 router.post("/", authenticate(["BUYER", "ADMIN"]), orderController.createOrder);

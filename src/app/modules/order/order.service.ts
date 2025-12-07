@@ -122,9 +122,18 @@ const getOrderIems = async (req: Request) => {
   return orderItems;
 };
 
+const getSingleOrder = async (req: Request) => {
+  const orderId = req.params.orderId;
+  const order = await prisma.order.findFirstOrThrow({
+    where: { id: orderId },
+  });
+  return order;
+};
+
 export const orderService = {
   createOrder,
   updateOrderStatus,
   getAllOrders,
   getOrderIems,
+  getSingleOrder,
 };
