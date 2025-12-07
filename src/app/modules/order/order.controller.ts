@@ -10,7 +10,7 @@ const createOrder = catchAsync(
       status: 201,
       success: true,
       message: "order created successfully",
-      data: session,
+      data: { session, order },
     });
   }
 );
