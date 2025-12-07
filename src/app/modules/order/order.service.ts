@@ -80,7 +80,7 @@ const createOrder = async (
     const session = await stripe.checkout.sessions.create({
       line_items: [...lineItems],
       mode: "payment",
-      success_url: `${client_url}?success=true&orderId=${order.buyerId}`,
+      success_url: `${client_url}/payment?success=true&orderId=${order.buyerId}`,
     });
 
     return [order, session];
@@ -113,8 +113,17 @@ const getAllOrders = async (req: Request & { user?: any }) => {
   return orderItems;
 };
 
+const getOrderIems = async (req: Request) => {
+  const orderId = req.params.orderId;
+  const orderItems = await prisma.orderItem.findMany({
+    where: { orderId },
+  });
+  return orderItems;
+};
+
 export const orderService = {
   createOrder,
   updateOrderStatus,
   getAllOrders,
+  getOrderIems,
 };
