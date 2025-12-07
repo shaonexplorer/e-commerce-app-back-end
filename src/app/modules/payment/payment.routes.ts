@@ -33,9 +33,6 @@ router.post("/create-checkout-session", async (req, res, next) => {
     };
   });
 
-  console.log({ cartItems });
-  console.log({ lineItems });
-
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [...lineItems],

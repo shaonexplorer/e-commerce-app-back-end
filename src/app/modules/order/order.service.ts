@@ -1,5 +1,11 @@
 import { Request } from "express";
 import { prisma } from "../../config/prisma";
+import "dotenv/config";
+import { ICartItem } from "../payment/payment.routes";
+
+const secret_key = process.env.STRIPE_SECRET;
+const client_url = process.env.CLIENT_URL;
+const stripe = require("stripe")(secret_key);
 
 const createOrder = async (
   req: Request & { user?: { userId: string; userRole: string } }
@@ -17,18 +23,18 @@ const createOrder = async (
   const result = await prisma.$transaction(async (tnx) => {
     for (const item of items) {
       const product = await prisma.product.findUnique({
-        where: { id: item.productId },
+        where: { id: item.id },
       });
       if (!product) {
-        throw new Error(`Product with ID ${item.productId} not found.`);
+        throw new Error(`Product with ID ${item.id} not found.`);
       }
       if (product.quantity < item.quantity) {
-        throw new Error(`Insufficient stock for product ID ${item.productId}.`);
+        throw new Error(`Insufficient stock for product ID ${item.id}.`);
       }
       totalAmount += product.price * item.quantity;
       //   product.quantity -= item.quantity;
       await tnx.product.update({
-        where: { id: item.productId },
+        where: { id: item.id },
         data: { quantity: { decrement: item.quantity } },
       });
     }
@@ -38,13 +44,13 @@ const createOrder = async (
     });
 
     const data = await Promise.all(
-      items.map(async (item: { productId: string; quantity: number }) => {
+      items.map(async (item: { id: string; quantity: number }) => {
         const product = await tnx.product.findUnique({
-          where: { id: item.productId },
+          where: { id: item.id },
         });
         return {
           orderId: order.id,
-          productId: item.productId,
+          productId: item.id,
           quantity: item.quantity,
           sellerId: (product as any).sellerId,
           price: (product as any).price,
@@ -54,7 +60,30 @@ const createOrder = async (
 
     await tnx.orderItem.createMany({ data });
 
-    return order;
+    // payment init
+    const cartItems = req.body.items;
+    const lineItems = cartItems.map((item: ICartItem) => {
+      return {
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(item.unitPrice * 100), // Price in cents (e.g., $20.00)
+          product_data: {
+            name: item.name,
+            // description: "A comprehensive guide to Node.js.",
+            images: [item.image],
+          },
+        },
+        quantity: item.quantity,
+      };
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [...lineItems],
+      mode: "payment",
+      success_url: `${client_url}?success=true`,
+    });
+
+    return [order, session];
   });
 
   return result;

@@ -4,13 +4,13 @@ import { orderService } from "./order.service";
 
 const createOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const order = await orderService.createOrder(req);
+    const [order, session] = await orderService.createOrder(req);
 
     res.status(201).json({
       status: 201,
       success: true,
       message: "order created successfully",
-      data: order,
+      data: session,
     });
   }
 );
