@@ -80,7 +80,7 @@ const createOrder = async (
     const session = await stripe.checkout.sessions.create({
       line_items: [...lineItems],
       mode: "payment",
-      success_url: `${client_url}?success=true`,
+      success_url: `${client_url}?success=true&orderId=${order.buyerId}`,
     });
 
     return [order, session];
