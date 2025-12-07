@@ -29,7 +29,7 @@ const createOrder = async (
         throw new Error(`Product with ID ${item.id} not found.`);
       }
       if (product.quantity < item.quantity) {
-        throw new Error(`Insufficient stock for product ID ${item.id}.`);
+        throw new Error(`Insufficient stock of product: ${product.title}.`);
       }
       totalAmount += product.price * item.quantity;
       //   product.quantity -= item.quantity;
