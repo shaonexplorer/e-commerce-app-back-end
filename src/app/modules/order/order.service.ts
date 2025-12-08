@@ -122,7 +122,7 @@ const getOrderIems = async (req: Request) => {
   const orderId = req.params.orderId;
   const orderItems = await prisma.orderItem.findMany({
     where: { orderId },
-    include: { Product: true },
+    include: { Product: true, order: true },
   });
   return orderItems;
 };
