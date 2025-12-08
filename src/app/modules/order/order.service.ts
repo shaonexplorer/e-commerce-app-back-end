@@ -114,7 +114,7 @@ const getOrders = async (req: Request & { user?: any }) => {
 };
 
 const getAllOrders = async (req: Request & { user?: any }) => {
-  const orders = await prisma.order.findMany({});
+  const orders = await prisma.order.findMany({ include: { buyer: true } });
   return orders;
 };
 
