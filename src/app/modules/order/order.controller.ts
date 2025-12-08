@@ -28,15 +28,28 @@ const updateOrderStatus = catchAsync(
   }
 );
 
-const getAllOrders = catchAsync(
+const getOrders = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const orderItems = await orderService.getAllOrders(req);
+    const orderItems = await orderService.getOrders(req);
 
     res.status(200).json({
       status: 200,
       success: true,
       message: "orders retrieved successfully",
       data: orderItems,
+    });
+  }
+);
+
+const getAllOrders = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const orders = await orderService.getAllOrders(req);
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "orders retrieved successfully",
+      data: orders,
     });
   }
 );
@@ -73,4 +86,5 @@ export const orderController = {
   getAllOrders,
   getorderItems,
   getSingleOrder,
+  getOrders,
 };

@@ -104,13 +104,18 @@ const updateOrderStatus = async (req: Request) => {
   return updatedOrder;
 };
 
-const getAllOrders = async (req: Request & { user?: any }) => {
+const getOrders = async (req: Request & { user?: any }) => {
   const userId = req.user?.userId;
   const orderItems = await prisma.orderItem.findMany({
     where: { sellerId: userId },
     include: { Product: true, order: true },
   });
   return orderItems;
+};
+
+const getAllOrders = async (req: Request & { user?: any }) => {
+  const orders = await prisma.order.findMany({});
+  return orders;
 };
 
 const getOrderIems = async (req: Request) => {
@@ -136,4 +141,5 @@ export const orderService = {
   getAllOrders,
   getOrderIems,
   getSingleOrder,
+  getOrders,
 };

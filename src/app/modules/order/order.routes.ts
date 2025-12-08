@@ -4,7 +4,9 @@ import { orderController } from "./order.controller";
 
 const router = express.Router();
 
-router.get("/", authenticate(["SELLER"]), orderController.getAllOrders);
+router.get("/", authenticate(["SELLER"]), orderController.getOrders);
+
+router.get("/all", authenticate(["ADMIN"]), orderController.getAllOrders);
 
 router.get("/:orderId", orderController.getSingleOrder);
 
