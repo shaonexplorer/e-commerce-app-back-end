@@ -6,12 +6,16 @@ import cookieParser from "cookie-parser";
 import { orderRoutes } from "./app/modules/order/order.routes";
 import cors from "cors";
 import { paymentRoutes } from "./app/modules/payment/payment.routes";
+import { invoiceRoutes } from "./app/modules/invoice/invoice.routes";
 
 const app = express();
 
 app.use(
   cors({
-    origin: [`http://localhost:3000`],
+    origin: [
+      `http://localhost:3000`,
+      `https://e-commerce-app-front-end-psi.vercel.app`,
+    ],
     credentials: true,
   })
 );
@@ -29,6 +33,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/payment", paymentRoutes);
+app.use("/api/v1/invoice", invoiceRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
