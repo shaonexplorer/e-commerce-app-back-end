@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import PDFDocument from "pdfkit";
-import { invoiceServices } from "./invoice.service";
+import { invoiceServices, IOrder } from "./invoice.service";
 
 const createInvoice = async (
   req: Request,
@@ -12,42 +12,30 @@ const createInvoice = async (
     const { orderId } = req.params;
 
     // Mock order; replace with DB lookup
-    const order = {
+    const order: IOrder = {
       id: orderId,
       createdAt: new Date(),
       currency: "USD",
       company: {
-        name: "Shopster Inc.",
-        email: "support@shopster.com",
-        phone: "+1 (555) 123-4567",
-        address: "123 Market Street, San Francisco, CA 94103, USA",
-        website: "https://shopster.com",
+        name: "Shoppers Point",
+        email: "shaonexplorer@gmail.com",
+        phone: "+880 1680051016",
+        address: "6/12 Block-G/1, Mirpur-2, Dhaka-1216",
+        website: "https://shopperspoint.com",
       },
       customer: {
         name: "Abir Hossain",
-        email: "abir@example.com",
-        phone: "+880 17 0000 0000",
+        email: "shaonexplorer@gmail.com",
+        phone: "+880 1680051016",
         address: "Road 10, Dhanmondi, Dhaka 1209, Bangladesh",
       },
       items: [
-        {
-          sku: "SKU-001",
-          name: "Wireless Headphones",
-          qty: 1,
-          unitPrice: 89.99,
-        },
-        {
-          sku: "SKU-002",
-          name: "USB-C Charger 65W",
-          qty: 2,
-          unitPrice: 29.5,
-        },
-        {
-          sku: "SKU-003",
-          name: 'Laptop Sleeve 13"',
-          qty: 1,
-          unitPrice: 24.0,
-        },
+        // {
+        //   sku: "SKU-001",
+        //   name: "Wireless Headphones",
+        //   qty: 1,
+        //   unitPrice: 89.99,
+        // },
       ],
       discounts: [{ label: "Holiday Discount", amount: 10 }],
       shipping: { label: "Standard Shipping", amount: 5.99 },
@@ -60,6 +48,20 @@ const createInvoice = async (
         transactionId: "txn_4f9c2a",
       },
     };
+
+    const { orderItems, buyer } = await invoiceServices.getOrderItems(orderId);
+
+    order.customer.email = buyer.email;
+    order.customer.name = buyer.name as string;
+
+    orderItems.forEach((item) => {
+      order.items.push({
+        id: item.productId,
+        name: item.Product.title,
+        qty: item.quantity,
+        unitPrice: item.price as number,
+      });
+    });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -101,7 +103,7 @@ const createInvoice = async (
 
     const sumItems = (
       items: {
-        sku: string;
+        id: string;
         name: string;
         qty: number;
         unitPrice: number;

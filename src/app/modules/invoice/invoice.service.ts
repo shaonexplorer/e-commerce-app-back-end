@@ -1,6 +1,7 @@
 import moment from "moment";
+import { prisma } from "../../config/prisma";
 
-interface IOrder {
+export interface IOrder {
   id: string;
   createdAt: Date;
   currency: string;
@@ -18,7 +19,7 @@ interface IOrder {
     address: string;
   };
   items: {
-    sku: string;
+    id: string;
     name: string;
     qty: number;
     unitPrice: number;
@@ -59,17 +60,17 @@ interface ITotal {
 }
 
 function drawHeader(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
-  const top = doc.y;
+  const top = doc.y - 10;
 
   // Branding bar
-  doc
-    .rect(
-      doc.page.margins.left,
-      top,
-      doc.page.width - doc.page.margins.left - doc.page.margins.right,
-      60
-    )
-    .fill(COLORS.light);
+  // doc
+  //   .rect(
+  //     doc.page.margins.left,
+  //     top,
+  //     doc.page.width - doc.page.margins.left - doc.page.margins.right,
+  //     80
+  //   )
+  //   .fill(COLORS.light);
 
   doc
     .fillColor(COLORS.primary)
@@ -101,7 +102,7 @@ function drawHeader(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
   doc
     .fillColor(statusColor)
     .fontSize(11)
-    .text(order.payment.status, rightX - 200, top + 48, {
+    .text(order.payment.status, rightX - 200, top + 52, {
       width: 200,
       align: "center",
     });
@@ -109,8 +110,8 @@ function drawHeader(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
   doc.moveDown();
   doc.fillColor(COLORS.text);
   doc
-    .moveTo(doc.page.margins.left, top + 70)
-    .lineTo(rightX, top + 70)
+    .moveTo(doc.page.margins.left, top + 80)
+    .lineTo(rightX, top + 80)
     .strokeColor(COLORS.border)
     .lineWidth(1)
     .stroke();
@@ -138,7 +139,7 @@ function drawMeta(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
 }
 
 function drawCustomer(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
-  const yStart = doc.y;
+  const yStart = doc.y + 20;
   const colWidth =
     (doc.page.width - doc.page.margins.left - doc.page.margins.right) / 2 - 10;
 
@@ -159,17 +160,21 @@ function drawCustomer(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
 
   // Payment method
   const rightX = doc.page.margins.left + colWidth + 20;
-  doc
-    .fillColor(COLORS.primary)
-    .fontSize(12)
-    .text("Payment details", rightX, yStart);
-  doc
-    .fillColor(COLORS.text)
-    .fontSize(11)
-    .text(`Method: ${order.payment.method}`, rightX)
-    .fillColor(COLORS.subtext)
-    .fontSize(10)
-    .text(`Status: ${order.payment.status}`, rightX);
+  // doc
+  //   .fillColor(COLORS.primary)
+  //   .fontSize(12)
+  //   .text("Payment details", rightX, yStart, { align: "right" });
+  // doc
+  //   .fillColor(COLORS.text)
+  //   .fontSize(11)
+  //   .text(`Method: ${order.payment.method}`, {
+  //     align: "right",
+  //   })
+  //   .fillColor(COLORS.subtext)
+  //   .fontSize(10)
+  //   .text(`Status: ${order.payment.status}`, {
+  //     align: "right",
+  //   });
 
   doc.moveDown(0.8);
 }
@@ -186,11 +191,11 @@ function drawItemsTable(
   const rowHeight = 26;
 
   const cols = [
-    { label: "Item", width: 220 },
-    { label: "SKU", width: 110 },
-    { label: "Qty", width: 60 },
-    { label: "Unit price", width: 100 },
-    { label: "Line total", width: 120 },
+    { label: "Id", width: 230 },
+    { label: "Item", width: 180 },
+    { label: "Qty", width: 40 },
+    { label: "Unit price", width: 70 },
+    // { label: "Line total", width: 120 },
   ];
 
   // Header
@@ -215,13 +220,14 @@ function drawItemsTable(
     }
 
     x = leftX + 10;
-    doc.fillColor(COLORS.text).fontSize(10);
-    doc.text(item.name, x, y + 8, { width: cols[0].width - 20 });
-    x += cols[0].width;
 
     doc
       .fillColor(COLORS.subtext)
-      .text(item.sku, x, y + 8, { width: cols[1].width - 20 });
+      .text(item.id, x, y + 8, { width: cols[0].width - 20 });
+    x += cols[0].width;
+
+    doc.fillColor(COLORS.text).fontSize(10);
+    doc.text(item.name, x, y + 8, { width: cols[1].width - 20 });
     x += cols[1].width;
 
     doc
@@ -232,11 +238,11 @@ function drawItemsTable(
     doc.text(fmtMoney(item.unitPrice), x, y + 8, { width: cols[3].width - 20 });
     x += cols[3].width;
 
-    const lineTotal = item.qty * item.unitPrice;
-    doc.text(fmtMoney(lineTotal), x, y + 8, {
-      width: cols[4].width - 20,
-      align: "right",
-    });
+    // const lineTotal = item.qty * item.unitPrice;
+    // doc.text(fmtMoney(lineTotal), x, y + 8, {
+    //   width: cols[4].width - 20,
+    //   align: "right",
+    // });
 
     y += rowHeight;
   });
@@ -263,10 +269,13 @@ function drawSummary(
 
   const leftX = doc.page.margins.left;
   const rightX = doc.page.width - doc.page.margins.right;
-  const summaryWidth = 280;
+  const summaryWidth = 300;
   const summaryX = rightX - summaryWidth;
 
-  doc.fillColor(COLORS.primary).fontSize(12).text("Summary", summaryX, doc.y);
+  doc
+    .fillColor(COLORS.primary)
+    .fontSize(12)
+    .text("Summary", summaryX, doc.y + 10);
 
   const rows = [
     { label: "Subtotal", value: fmtMoney(subtotal) },
@@ -283,7 +292,7 @@ function drawSummary(
     },
   ];
 
-  let y = doc.y + 6;
+  let y = doc.y + 10;
   rows.forEach((r) => {
     doc
       .fillColor(COLORS.subtext)
@@ -300,15 +309,15 @@ function drawSummary(
   });
 
   // Grand total box
-  doc
-    .roundedRect(summaryX, y + 6, summaryWidth, 34, 6)
-    .strokeColor(COLORS.border)
-    .lineWidth(1)
-    .stroke();
+  // doc
+  //   .roundedRect(summaryX, y + 6, summaryWidth, 34, 6)
+  //   .strokeColor(COLORS.border)
+  //   .lineWidth(1)
+  //   .stroke();
   doc
     .fillColor(COLORS.primary)
     .fontSize(12)
-    .text("Total", summaryX + 10, y + 15);
+    .text("Total", summaryX, y + 15);
   doc
     .fillColor(COLORS.accent)
     .fontSize(14)
@@ -318,17 +327,18 @@ function drawSummary(
     });
 
   // Optional: QR code placeholder (e.g., to order page)
-  doc
-    .fillColor(COLORS.subtext)
-    .fontSize(9)
-    .text("Scan to view order", leftX, y + 8);
+  // doc
+  //   .fillColor(COLORS.subtext)
+  //   .fontSize(9)
+  //   .text("Scan to view order", leftX, y + 8);
   // If you render an actual QR, draw it at leftX, y+24 (using an image from a pre-generated QR).
 
-  doc.moveDown(1.2);
+  doc.moveDown(5);
 }
 
 function drawNotes(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
-  doc.fillColor(COLORS.primary).fontSize(12).text("Notes");
+  const leftX = doc.page.margins.left;
+  doc.fillColor(COLORS.primary).fontSize(12).text("Notes", leftX);
   doc
     .fillColor(COLORS.subtext)
     .fontSize(10)
@@ -354,7 +364,8 @@ function drawFooter(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
         order.company.name
       } — All rights reserved.`,
       doc.page.margins.left,
-      footerY + 10
+      footerY + 10,
+      { continued: true }
     )
     .text(
       "This invoice was generated electronically and is valid without a signature.",
@@ -365,6 +376,15 @@ function drawFooter(doc: PDFKit.PDFDocument, order: IOrder, COLORS: IColors) {
     );
 }
 
+const getOrderItems = async (id: string) => {
+  const { orderItems, buyer } = await prisma.order.findFirstOrThrow({
+    where: { id },
+    include: { orderItems: { include: { Product: true } }, buyer: true },
+  });
+
+  return { orderItems, buyer };
+};
+
 export const invoiceServices = {
   drawCustomer,
   drawFooter,
@@ -373,4 +393,5 @@ export const invoiceServices = {
   drawMeta,
   drawNotes,
   drawSummary,
+  getOrderItems,
 };
