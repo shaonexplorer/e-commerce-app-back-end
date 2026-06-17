@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.productRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const product_controller_1 = require("./product.controller");
+const authenticate_1 = require("../../middleware/authenticate");
+const multer_1 = require("../../config/multer");
+const zodValidation_1 = require("../../middleware/zodValidation");
+const product_validation_1 = require("./product.validation");
+const router = express_1.default.Router();
+router.get("/", product_controller_1.productController.getPublicProducts);
+router.get("/my", (0, authenticate_1.authenticate)(["SELLER", "ADMIN"]), product_controller_1.productController.getAllProducts);
+router.get("/:id", product_controller_1.productController.getProductById);
+router.post("/create", multer_1.upload.array("images", 5), (0, authenticate_1.authenticate)(["ADMIN", "SELLER"]), (0, zodValidation_1.zodValidation)(product_validation_1.createProductZodSchema), product_controller_1.productController.createProduct);
+router.patch("/:id", multer_1.upload.array("images", 5), (0, authenticate_1.authenticate)(["ADMIN", "SELLER"]), (0, zodValidation_1.zodValidation)(product_validation_1.updateProductZodSchema), product_controller_1.productController.editProduct);
+router.delete("/:id", (0, authenticate_1.authenticate)(["ADMIN", "SELLER"]), product_controller_1.productController.deleteProduct);
+exports.productRoutes = router;
